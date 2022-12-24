@@ -21,6 +21,10 @@ public class OrderService {
     }
     public void orderToPartner(String orderId, String partnerId)
     {
+        if(!orderRepository.orderHashMap.containsKey(orderId) || !orderRepository.partnerHashMap.containsKey(partnerId))
+        {
+            return;
+        }
         if(!orderRepository.orderPartnerHashMap.containsKey(orderId))
         {
             orderRepository.orderPartnerHashMap.put(orderId,partnerId);
@@ -43,22 +47,27 @@ public class OrderService {
     }
     public Order getOrder(String orderId)
     {
+        if(!orderRepository.orderHashMap.containsKey(orderId)) return null;
         return orderRepository.orderHashMap.get(orderId);
     }
     public DeliveryPartner getDeliveryPartner(String partnerId)
     {
+        if(!orderRepository.partnerHashMap.containsKey(partnerId)) return null;
         return orderRepository.partnerHashMap.get(partnerId);
     }
     public int noOfOrdersToPartner(String partnerId)
     {
+        if(!orderRepository.partnerHashMap.containsKey(partnerId)) return 0;
         return orderRepository.partnerHashMap.get(partnerId).getNumberOfOrders();
     }
     public List<String> listOfOrdersToPartner(String partnerId)
     {
+        if(!orderRepository.partnerHashMap.containsKey(partnerId)) return new ArrayList<>();
         return orderRepository.listOfOrdersHashMap.get(partnerId);
     }
     public List<String> listOfAllOrders()
     {
+        if(orderRepository.orderHashMap.size() == 0) return new ArrayList<>();
         List<String> listOfAllOrders = new ArrayList<>();
         for(String orderId : orderRepository.orderHashMap.keySet())
         {
@@ -72,6 +81,10 @@ public class OrderService {
     }
     public int noOfUndeliveredOrders(String partnerId, String time)
     {
+        if(!orderRepository.partnerHashMap.containsKey(partnerId) || !orderRepository.listOfOrdersHashMap.containsKey(partnerId))
+        {
+            return 0;
+        }
         int count =0;
         int index = time.indexOf(':');
         String hour = time.substring(0,index);
@@ -91,6 +104,10 @@ public class OrderService {
     }
     public String getLastDeliveryTime(String partnerId)
     {
+        if(!orderRepository.partnerHashMap.containsKey(partnerId) || !orderRepository.listOfOrdersHashMap.containsKey(partnerId))
+        {
+            return "";
+        }
         int maxTime = 0;
         List<String> listOfOrders = orderRepository.listOfOrdersHashMap.get(partnerId);
         for(String orderId : listOfOrders)
@@ -118,6 +135,7 @@ public class OrderService {
     }
     public void deleteOrder(String orderId)
     {
+        if(!orderRepository.orderHashMap.containsKey(orderId)) return;
         orderRepository.orderHashMap.remove(orderId);
 
         if(orderRepository.orderPartnerHashMap.containsKey(orderId))
@@ -141,7 +159,7 @@ public class OrderService {
     }
     public void deletePartner(String partnerId)
     {
-
+        if(!orderRepository.partnerHashMap.containsKey(partnerId)) return;
         orderRepository.partnerHashMap.remove(partnerId);
         if(orderRepository.listOfOrdersHashMap.containsKey(partnerId))
         {
